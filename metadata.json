@@ -1,0 +1,5 @@
+{
+  "name": "Bloodjack",
+  "description": "A dark-themed, high-stakes card game of chance and strategy. Players guess 'higher' or 'lower' to clear piles, manage special card effects, and avoid locking their piles. The goal is to deplete the main deck and correctly guess the identity of a hidden card to win.",
+  "requestFramePermissions": []
+}

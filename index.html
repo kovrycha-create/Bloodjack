@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bloodjack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=EB+Garamond:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes shake {
+        0% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
+        100% { transform: translateX(0); }
+      }
+      .animate-shake {
+        animation: shake 0.5s linear;
+      }
+      
+      body {
+        font-family: 'EB Garamond', serif;
+        color: #e0e0e0;
+        background-color: #0a0a0a;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        font-family: 'Cinzel Decorative', cursive;
+        font-weight: 700;
+        color: #e53e3e; /* red-600 */
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+      }
+
+      .card {
+        width: 120px;
+        height: 168px;
+      }
+      
+      /* --- Buttons --- */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.75rem;
+        border-radius: 0.375rem; /* rounded-md */
+        font-family: 'Cinzel Decorative', cursive;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border: 1px solid transparent;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+        background: #4a5568 !important; /* gray-700 */
+      }
+
+      .btn-primary {
+        background: linear-gradient(145deg, #a71d1d, #7f1d1d);
+        border-color: #ef4444; /* red-500 */
+        color: white;
+        text-shadow: 1px 1px 1px #000;
+      }
+      .btn-primary:not(:disabled):hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4), 0 0 15px rgba(239, 68, 68, 0.2);
+        background: linear-gradient(145deg, #c53030, #9b2c2c);
+      }
+      
+      .btn-secondary {
+        background-color: transparent;
+        border: 1px solid #718096; /* gray-500 */
+        color: #cbd5e0; /* gray-300 */
+      }
+      .btn-secondary:not(:disabled):hover {
+         background-color: rgba(255, 255, 255, 0.1);
+         border-color: #a0aec0; /* gray-400 */
+      }
+      
+      @keyframes pulse-glow-button {
+        0% { box-shadow: 0 0 5px #ef4444, 0 0 8px #ef4444; }
+        50% { box-shadow: 0 0 15px #ef4444, 0 0 25px #ef4444; }
+        100% { box-shadow: 0 0 5px #ef4444, 0 0 8px #ef4444; }
+      }
+
+      .btn-glow {
+        animation: pulse-glow-button 2s infinite ease-in-out;
+      }
+
+      @keyframes pulse-glow-turbo-button {
+        0% { box-shadow: 0 0 5px #d946ef, 0 0 8px #d946ef; }
+        50% { box-shadow: 0 0 15px #d946ef, 0 0 25px #d946ef; }
+        100% { box-shadow: 0 0 5px #d946ef, 0 0 8px #d946ef; }
+      }
+
+      .btn-turbo-glow {
+        animation: pulse-glow-turbo-button 1.5s infinite ease-in-out;
+        background: linear-gradient(145deg, #a855f7, #7e22ce);
+        border-color: #d946ef;
+      }
+
+      /* --- Panels & Containers --- */
+      .panel-inset {
+        background-color: rgba(0, 0, 0, 0.4);
+        border: 1px solid #333;
+        border-radius: 0.5rem;
+        box-shadow: inset 0 2px 8px rgba(0,0,0,0.7);
+        padding: 1.5rem;
+      }
+
+      .pile-frame {
+        background-color: rgba(0, 0, 0, 0.4);
+        border: 1px solid #333;
+        border-radius: 0.5rem;
+        box-shadow: inset 0 2px 8px rgba(0,0,0,0.7);
+      }
+
+      /* --- Modals --- */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        backdrop-filter: blur(5px);
+      }
+      .modal-content {
+        background: radial-gradient(circle at top, #2d1616, #1a1a1a);
+        border: 2px solid #ef4444; /* red-500 */
+        border-radius: 0.5rem;
+        padding: 2.5rem;
+        color: white;
+        width: 90vw;
+        max-width: 640px; /* max-w-xl */
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 0 30px rgba(239, 68, 68, 0.4);
+      }
+      .modal-content h2 {
+        margin-bottom: 1.5rem;
+        font-size: 2.25rem; /* text-4xl */
+      }
+      .modal-content p {
+        line-height: 1.7;
+        color: #d1d5db; /* gray-300 */
+        font-size: 1.125rem; /* text-lg */
+      }
+
+      /* --- Specific Component Styling --- */
+      .game-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding: 0.75rem;
+        border-bottom: 1px solid #4a0e0e;
+      }
+      .header-logo {
+        max-width: 250px;
+        height: auto;
+      }
+      
+      .pile-button {
+        padding: 0.75rem;
+        border-radius: 0.375rem;
+        color: white;
+        transition: all 0.2s;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(0,0,0,0.3);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .pile-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .pile-button-higher {
+        color: #60a5fa; /* blue-400 */
+        border-color: rgba(59, 130, 246, 0.4); /* blue-500 with opacity */
+        background: rgba(59, 130, 246, 0.1);
+      }
+      .pile-button-higher:not(:disabled):hover {
+        background: rgba(59, 130, 246, 0.3);
+        border-color: #60a5fa; /* blue-400 */
+        transform: scale(1.1);
+        box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+      }
+      
+      .pile-button-lower {
+        color: #fcd34d; /* amber-300 */
+        border-color: rgba(245, 158, 11, 0.4); /* amber-500 with opacity */
+        background: rgba(245, 158, 11, 0.1);
+      }
+      .pile-button-lower:not(:disabled):hover {
+        background: rgba(245, 158, 11, 0.3);
+        border-color: #fcd34d; /* amber-300 */
+        transform: scale(1.1);
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+      }
+      
+      .deck-count-text {
+        font-family: 'Cinzel Decorative', cursive;
+        font-size: 2.5rem; /* text-4xl */
+        font-weight: 700;
+        color: #ef4444; /* red-500 */
+        text-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+        flex-shrink: 0;
+      }
+      
+      .progress-bar-container-inset {
+        height: 24px; /* h-6 */
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 9999px; /* rounded-full */
+        border: 1px solid #333;
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+        padding: 4px;
+        overflow: hidden;
+      }
+
+      .progress-bar-fill-pulsing {
+        height: 100%;
+        border-radius: 9999px; /* rounded-full */
+        background: linear-gradient(90deg, #ef4444, #b91c1c);
+        transition: width 0.5s ease-in-out;
+        box-shadow: 0 0 10px #ef4444, 0 0 15px #b91c1c;
+        animation: pulse-glow 2s infinite ease-in-out;
+      }
+
+      @keyframes pulse-glow {
+        0% { box-shadow: 0 0 8px #ef4444, 0 0 12px #b91c1c; }
+        50% { box-shadow: 0 0 16px #ef4444, 0 0 24px #b91c1c; }
+        100% { box-shadow: 0 0 8px #ef4444, 0 0 12px #b91c1c; }
+      }
+
+      /* --- Tips Panel --- */
+      .tips-content {
+        max-height: 100px;
+        overflow: hidden;
+        transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+        padding: 1rem 0.5rem;
+      }
+      .tips-content-collapsed {
+        max-height: 0;
+        padding: 0 0.5rem;
+      }
+      @keyframes fade-in {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fade-in 0.6s ease-out;
+      }
+
+      @keyframes special-tip-glow-animation {
+        0% { box-shadow: inset 0 2px 8px rgba(0,0,0,0.7), 0 0 5px rgba(250, 204, 21, 0.3); }
+        50% { box-shadow: inset 0 2px 8px rgba(0,0,0,0.7), 0 0 15px rgba(250, 204, 21, 0.5), 0 0 20px rgba(250, 204, 21, 0.3); }
+        100% { box-shadow: inset 0 2px 8px rgba(0,0,0,0.7), 0 0 5px rgba(250, 204, 21, 0.3); }
+      }
+
+      .special-tip-glow {
+        animation: special-tip-glow-animation 3s infinite ease-in-out;
+        border-color: #facc15; /* yellow-400 */
+      }
+
+      /* Animated Background Styles */
+      .animated-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        z-index: -1;
+      }
+
+      .cell {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, #ff4d4d, #b30000);
+        box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 5px #b30000;
+        will-change: transform, opacity, background, box-shadow;
+        transition: transform 5s ease-in-out, background 2s ease-in-out, opacity 2s ease-in-out, box-shadow 2s ease-in-out;
+      }
+
+      .blood-cell {
+        width: 40px;
+        height: 40px;
+        opacity: 0.15;
+      }
+
+      .aggressive-cell {
+        width: 120px;
+        height: 120px;
+        background: radial-gradient(circle at 30% 30%, #ff8080, #660000);
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.7), 0 0 15px #660000, 0 0 30px rgba(255, 0, 0, 0.5);
+        opacity: 0.25;
+        animation: chase 20s linear infinite alternate;
+        will-change: transform, opacity, background;
+        transition: transform 2s ease-in-out, background 2s ease-in-out, opacity 2s ease-in-out;
+      }
+
+      @keyframes float1 {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(15vw, -20vh) scale(1.1); }
+      }
+
+      @keyframes float2 {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(-20vw, 25vh) scale(0.9); }
+      }
+
+      @keyframes float3 {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(25vw, 15vh) scale(1.2); }
+      }
+
+      @keyframes float4 {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(-10vw, -25vh) scale(1); }
+      }
+
+      @keyframes chase {
+        0% { transform: translate(10vw, 20vh) rotate(0deg); }
+        25% { transform: translate(60vw, -5vh) rotate(90deg); }
+        50% { transform: translate(70vw, 70vh) rotate(180deg); }
+        75% { transform: translate(-10vw, 80vh) rotate(270deg); }
+        100% { transform: translate(10vw, 20vh) rotate(360deg); }
+      }
+      
+      @keyframes ai-press-animation {
+        0% { transform: scale(1.1); box-shadow: 0 0 15px currentColor, 0 0 25px currentColor; }
+        50% { transform: scale(1.25); box-shadow: 0 0 25px currentColor, 0 0 40px currentColor; }
+        100% { transform: scale(1.1); box-shadow: 0 0 15px currentColor, 0 0 25px currentColor; }
+      }
+
+      .animate-ai-press {
+        animation: ai-press-animation 0.8s ease-in-out;
+      }
+
+      @keyframes pulse-good-effect {
+        0% { transform: scale(1); filter: brightness(1); }
+        50% { transform: scale(1.02); filter: brightness(1.5) saturate(1.2); }
+        100% { transform: scale(1); filter: brightness(1); }
+      }
+      @keyframes pulse-bad-effect {
+        0% { transform: scale(1); filter: brightness(1); }
+        50% { transform: scale(0.98); filter: brightness(0.7) saturate(1.5); }
+        100% { transform: scale(1); filter: brightness(1); }
+      }
+
+      .pulse-good-effect { animation: pulse-good-effect 1s ease-out; }
+      .pulse-bad-effect { animation: pulse-bad-effect 1s ease-out; }
+
+      /* --- Mobile Responsiveness --- */
+      @media (max-width: 768px) {
+        body {
+          padding: 0.5rem;
+        }
+
+        .card {
+            /* thinner proportion for mobile */
+            width: 80px;
+            height: 128px;
+        }
+
+        .modal-content {
+          padding: 1.5rem;
+        }
+
+        .modal-content h2 {
+          font-size: 1.75rem; /* text-2xl */
+        }
+        
+        .header-logo {
+          max-width: 180px;
+        }
+
+        .btn {
+          padding: 0.6rem 1.25rem;
+          font-size: 0.9rem;
+        }
+        
+        .pile-button {
+          padding: 1rem;
+        }
+
+        .deck-count-text {
+          font-size: 2rem; /* text-3xl */
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.1.1/",
+    "react": "https://esm.sh/react@^19.1.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.1/",
+    "@google/genai": "https://esm.sh/@google/generative-ai"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    
+    <audio id="bloodlockSound" src="https://static.wixstatic.com/mp3/2ef790_889cae85787e491db7117d784f4f4578.mp3"></audio>
+    <audio id="jokerUsedSound" src="https://static.wixstatic.com/mp3/2ef790_31dc98c6459445eea3e2854114bcf1d4.mp3"></audio>
+    <audio id="lastCardSound" src="https://static.wixstatic.com/mp3/2ef790_1910b282ea084b2da510a8aae73d5010.mp3"></audio>
+    <audio id="bloodsurgeSound" src="https://static.wixstatic.com/mp3/2ef790_0ac03020943b4fd68142c30f2e6f1f56.mp3"></audio>
+    <audio id="aceResetSound" src="https://static.wixstatic.com/mp3/2ef790_dc567d45d5b747fb814ce785ee72b9ea.mp3"></audio>
+    <audio id="winOverrideSound" src="https://static.wixstatic.com/mp3/2ef790_7ba5a603e6cc4bc8ad1a7f7d61a127eb.mp3"></audio>
+    <audio id="musicSound" loop src="https://deffy.me/Bloodjack/imgs/bloodjack-theme.mp3"></audio>
+
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
